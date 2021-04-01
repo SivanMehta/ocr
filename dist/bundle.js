@@ -8940,12 +8940,10 @@
 	  });
 	}
 
-	function Preview({
-	  file
+	function Stats({
+	  image
 	}) {
-	  return file && /*#__PURE__*/react.createElement("div", null, /*#__PURE__*/react.createElement("p", null, "Filename: ", file.name), /*#__PURE__*/react.createElement("p", null, "File type: ", file.type), /*#__PURE__*/react.createElement("p", null, "File size: ", file.size, " bytes"), /*#__PURE__*/react.createElement(ImageThumb, {
-	    image: file
-	  }));
+	  return /*#__PURE__*/react.createElement("div", null, /*#__PURE__*/react.createElement("p", null, "Filename: ", image.name), /*#__PURE__*/react.createElement("p", null, "File type: ", image.type), /*#__PURE__*/react.createElement("p", null, "File size: ", image.size, " bytes"));
 	}
 
 	function Upload({
@@ -8957,26 +8955,25 @@
 	    color: 'black',
 	    padding: 20
 	  };
-	  return /*#__PURE__*/react.createElement("div", {
+	  return /*#__PURE__*/react.createElement("div", null, /*#__PURE__*/react.createElement("div", {
 	    style: styles
 	  }, /*#__PURE__*/react.createElement(FileDrop_2, {
 	    onDrop: files => setFile(files[0])
-	  }, "Drop some files here!"));
+	  }, "Drop some files here!")), /*#__PURE__*/react.createElement("p", null, "Or select a file: ", /*#__PURE__*/react.createElement("input", {
+	    type: "file",
+	    onChange: e => setFile(e.target.files[0])
+	  })));
 	}
 
 	function Loading({
-	  file,
-	  worker,
-	  ready
+	  children,
+	  ready,
+	  message = ''
 	}) {
-	  return ready ? /*#__PURE__*/react.createElement(OCR, {
-	    file: file,
-	    worker: worker
-	  }) : 'Loading OCR model...';
+	  return ready ? children : message;
 	}
 
 	function App() {
-	  // State to store uploaded file
 	  const [file, setFile] = react.useState(false);
 	  const [ready, setReady] = react.useState(false);
 
@@ -8994,13 +8991,21 @@
 	    className: "container"
 	  }, /*#__PURE__*/react.createElement(Upload, {
 	    setFile: setFile
-	  }), /*#__PURE__*/react.createElement(Preview, {
-	    file: file
 	  }), /*#__PURE__*/react.createElement(Loading, {
+	    ready: file
+	  }, /*#__PURE__*/react.createElement(ImageThumb, {
+	    image: file
+	  })), /*#__PURE__*/react.createElement(Loading, {
+	    ready: ready,
+	    message: "Loading OCR Model..."
+	  }, /*#__PURE__*/react.createElement(OCR, {
 	    file: file,
-	    worker: worker,
-	    ready: ready
-	  }));
+	    worker: worker
+	  })), /*#__PURE__*/react.createElement(Loading, {
+	    ready: file
+	  }, /*#__PURE__*/react.createElement(Stats, {
+	    image: file
+	  })));
 	}
 
 	reactDom.render( /*#__PURE__*/react.createElement(App, null), document.querySelector('#root'));

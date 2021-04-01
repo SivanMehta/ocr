@@ -9,13 +9,12 @@ function ImageThumb ({ image }){
   return <img src={URL.createObjectURL(image)} alt={image.name} />;
 };
 
-function Preview({ file }) {
-  return file && (
+function Stats({ image }) {
+  return (
     <div>
-      <p>Filename: {file.name}</p>
-      <p>File type: {file.type}</p>
-      <p>File size: {file.size} bytes</p>
-      <ImageThumb image={ file } />
+      <p>Filename: {image.name}</p>
+      <p>File type: {image.type}</p>
+      <p>File size: {image.size} bytes</p>
     </div>
   );
 }
@@ -23,22 +22,24 @@ function Preview({ file }) {
 function Upload({ setFile }) {
   const styles = { border: '1px solid black', width: 600, color: 'black', padding: 20 };
   return (
-    <div style={styles}>
-      <FileDrop onDrop={ files => setFile(files[0]) }>
-        Drop some files here!
-      </FileDrop>
+    <div>
+      <div style={styles}>
+        <FileDrop onDrop={ files => setFile(files[0]) }>
+          Drop some files here!
+        </FileDrop>
+      </div>
+      <p>
+        Or select a file: <input type="file" onChange={ e => setFile(e.target.files[0]) } />
+      </p>
     </div>
   );
 }
 
-function Loading({ file, worker, ready }) {
-  return ready ?
-    <OCR file={ file } worker={ worker } /> :
-    'Loading OCR model...';
+function Loading({ children, ready, message='' }) {
+  return ready ? children : (message);
 }
 
 function App() {
-  // State to store uploaded file
   const [file, setFile] = useState(false);
   const [ready, setReady] = useState(false);
 
@@ -56,8 +57,18 @@ function App() {
   return (
     <div className='container'>
       <Upload setFile={ setFile } />
-      <Preview file={ file } />
-      <Loading file={ file } worker={ worker } ready={ ready }/>
+
+      <Loading ready={ file }>
+        <ImageThumb image={ file } />
+      </Loading>
+
+      <Loading ready={ ready } message='Loading OCR Model...'>
+        <OCR file={ file } worker={ worker } />
+      </Loading>
+
+      <Loading ready={ file }>
+        <Stats image={ file } />
+      </Loading>
     </div>
   );
 }
