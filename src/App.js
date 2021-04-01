@@ -1,16 +1,35 @@
 import React, { useState, useEffect } from 'react';
+import { FileDrop } from 'react-file-drop';
+
 import OCR from './ocr';
 const { createWorker } = Tesseract;
-const worker = createWorker({
-  logger: log => console.log(log)
-});
+const worker = createWorker();
 
-/**
- * Component to display thumbnail of image.
- */
 function ImageThumb ({ image }){
   return <img src={URL.createObjectURL(image)} alt={image.name} />;
 };
+
+function Preview({ file }) {
+  return file && (
+    <div>
+      <p>Filename: {file.name}</p>
+      <p>File type: {file.type}</p>
+      <p>File size: {file.size} bytes</p>
+      <ImageThumb image={ file } />
+    </div>
+  );
+}
+
+function Upload({ setFile }) {
+  const styles = { border: '1px solid black', width: 600, color: 'black', padding: 20 };
+  return (
+    <div style={styles}>
+      <FileDrop onDrop={ files => setFile(files[0]) }>
+        Drop some files here!
+      </FileDrop>
+    </div>
+  );
+}
 
 function Loading({ file, worker, ready }) {
   return ready ?
@@ -21,6 +40,7 @@ function Loading({ file, worker, ready }) {
 function App() {
   // State to store uploaded file
   const [file, setFile] = useState(false);
+  const [ready, setReady] = useState(false);
 
   const loadModel = async () => {
     await worker.load();
@@ -29,21 +49,14 @@ function App() {
     setReady(true);
   };
 
-  const [ready, setReady] = useState(false);
-
   useEffect(() => {
     loadModel();
   });
 
   return (
     <div className='container'>
-      <div>
-        <input type="file" onChange={ e => setFile(e.target.files[0]) } />
-        <p>Filename: {file.name}</p>
-        <p>File type: {file.type}</p>
-        <p>File size: {file.size} bytes</p>
-        {file && <ImageThumb image={ file } />}
-      </div>
+      <Upload setFile={ setFile } />
+      <Preview file={ file } />
       <Loading file={ file } worker={ worker } ready={ ready }/>
     </div>
   );

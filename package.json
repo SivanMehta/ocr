@@ -17,6 +17,7 @@
     "@rollup/plugin-replace": "^2.4.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-file-drop": "^3.1.2",
     "rollup": "^2.44.0",
     "rollup-plugin-livereload": "^2.0.0"
   }
