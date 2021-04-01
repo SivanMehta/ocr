@@ -1,4 +1,3 @@
-import serve from "rollup-plugin-serve";
 import livereload from "rollup-plugin-livereload";
 import babel from '@rollup/plugin-babel';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
@@ -22,6 +21,6 @@ export default {
       presets: ["@babel/preset-react"],
     }),
     commonjs(),
-    livereload({ watch: "dist" }),
+    livereload({ watch: "dist" })
   ]
 };
